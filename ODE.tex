@@ -1,0 +1,404 @@
+\documentclass[dvipdfmx, a4paper]{jsarticle}
+
+\usepackage{url}
+\usepackage{siunitx}
+\usepackage{color}
+\usepackage{graphicx}
+%\usepackage{tikz}
+%\usetikzlibrary{shadows}
+\usepackage{comment}
+\usepackage{amsmath, amssymb}
+\usepackage{theorem}
+\usepackage{amsfonts}
+\usepackage{bbm, bm}
+\usepackage{hyperref}
+\usepackage{pxjahyper}
+\usepackage{physics}
+%\usepackage{float}
+%\usepackage{cancel}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable, skins, theorems}
+\usepackage{listings, jlisting}
+\usepackage{here}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+
+\lstset{
+    language = C++,
+    frame = single,
+    basicstyle = {\small\ttfamily},
+    identifierstyle = {\small},
+    commentstyle = {\small\ttfamily \color[rgb]{0.5, 0.5, 0.5}},
+    keywordstyle = {\small\ttfamily \color[rgb]{0.7, 0, 0.5}},
+    stringstyle = {\small\ttfamily \color[rgb]{0, 0.3, 0.5}}
+}
+
+\theorembodyfont{\normalfont}
+\newtheorem{theorem}{定理}
+\newtheorem{definition}[theorem]{定義}
+\newtheorem{example}[theorem]{例}
+
+\title{微分方程式概論}
+\author{Lei \href{https://twitter.com/_Eru_128}{@\_Eru\_128}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{概略}
+
+運動方程式の正当性を主張するところから始めたくなったので，解析力学の話をします．
+
+\subsection{最小作用の原理による運動方程式の導出}
+
+運動を $q$ とする．このとき作用は
+\begin{equation}
+    S[q] = \int_a^b L(q(t), \dot q(t))dt
+\end{equation}
+の形で表される\footnote{このような，関数から実数への写像を汎関数という．}．最小作用の原理より，この定積分 $S$ の値が最も小さくなるように運動 $q$ の具体形が定まる．変分
+\begin{equation}
+    \tilde{q}(t)=q(t)+\varepsilon f(t)
+\end{equation}
+を考える．このとき境界条件として $f(a)=f(b)=0$ を課しておく．$L(\tilde{q}, \dot\tilde{q})$ のテイラー展開とその積分を考えると
+\begin{equation}
+    S[\tilde{q}]=\int_a^b L(q(t), \dot q(t))dt+\varepsilon\int_a^b\left(\left(\frac{\partial L}{\partial q}\right)f(t)+\left(\frac{\partial L}{\partial \dot q}\right)\dot f(t)\right)dt+o(\varepsilon)
+\end{equation}
+となるから，$q$ の変形による作用の変化は
+\begin{align}
+    S[\tilde{q}]-S[q]&=\varepsilon\int_a^b\left(\left(\frac{\partial L}{\partial q}\right)f(t)+\left(\frac{\partial L}{\partial \dot q}\right)\dot f(t)\right)dt+o(\varepsilon)\\
+    &=\varepsilon\int_a^b\left(\frac{\partial L}{\partial q}-\frac{d}{dt}\left(\frac{\partial L}{\partial \dot q}\right)\right)f(t)dt+o(\varepsilon)
+\end{align}
+となる．作用が最小となる $q$ では微少量の変分に対しては $S[q]$ の値はあまり変わらない，すなわち $S[\tilde{q}]-S[q]\sim o(\varepsilon)$ となるから，上式で $\varepsilon$ に比例する項は厳密にゼロである必要がある．これが任意の $f$ に対して成り立つから，$q$ に関する条件として
+\begin{equation}
+    \frac{\partial L}{\partial q}-\frac{d}{dt}\left(\frac{\partial L}{\partial \dot q}\right)=0
+\end{equation}
+が得られる．
+
+\subsection{微分方程式に関する数学的考察}
+
+\subsubsection{微分方程式とは何か}
+
+上で述べたように，「関数を解とする方程式」の概念は微分積分あるいは質点系の古典力学とともに誕生し，それを考察することの重要性は，物理学の発展に伴って増してきた．数学的な考察の対象とするためには，まず微分方程式とはどのようなものなのかをはっきり定義しておく必要がある．ここでは一般に，未知変数 $x$ のある階数までの導関数たち
+\begin{equation}
+    \frac{d^i x}{dt^i}\ (i=1, \cdots, p)
+\end{equation}
+の間に与えられた関数関係を $x$ に対する常微分方程式と呼ぶ．更に，未知変数 $x$ が関数 $x=x(t)$ として求まればそれをこの方程式の解であるという．
+
+ここで，解が求まるとはどういうことか，厳密な定義を与えておく．
+
+\begin{definition}
+    $D\subset\R^2$，$f: D\to\R$ を関数とする．このとき
+    \begin{equation}
+        \label{e1}
+        \frac{dx}{dt}=f(t, x),\ \ t, x\in\R
+    \end{equation}
+    の形のものを正規形常微分方程式という．
+\end{definition}
+
+\begin{definition}
+    ある区間 $I$ で定義された実関数 $x(t)$ が次の３条件を満たすとき，方程式 (\ref{e1}) の解であるという．
+    \begin{enumerate}
+        \item $\forall t\in I$ に対して $(t, x(t))\in D$
+        \item 関数 $x(t)$ は微分可能
+        \item 各 $t\in I$ に対して，等式 $\frac{dx}{dt}(t)=f(t, x(t))$ が成立
+    \end{enumerate}
+\end{definition}
+
+\subsubsection{初期値問題，解の存在性と一意性}
+
+常微分方程式の初期値問題とは，$D$ の点 $(t_0, x_0)$ を与えたとき，条件
+\begin{equation}
+    \label{e2}
+    x(t_0)=x_0
+\end{equation}
+を満たす解を求めることである．この条件は初期条件と呼ばれる．先ほど見た運動方程式の導出を考えれば，運動は作用が最小となるようにただ１つに定まらなければならないとわかる．言い換えれば，適切な初期条件の下では係数あるいは定数項まで含めて唯一の解が求まるはずである，ということである．
+
+\begin{definition}
+    $D\subset\R^2$ とする．関数 $f: D\to\R$ がある定数 $L$ に対して
+    \begin{equation}
+        (t, x), (t, y)\in D\ \  のとき\ \ |f(t, x)-f(t, y)|\leq L|x-y|
+    \end{equation}
+    を満たすとき，$f$ は $D$ 上でリプシッツ条件を満たすという．
+\end{definition}
+
+\begin{theorem}
+    コーシーの存在と一意性定理：$r, R>0, t_0, x_0\in\R,$
+    \begin{equation}
+        D=\{(t, x)\in\R^2; |t-t_0|\leq r, |x-x_0|\leq R\}
+    \end{equation}
+    とおく．連続関数 $f:D\to\R$ がリプシッツ条件を満たすとき，初期値問題 (\ref{e1})，(\ref{e2}) の局所解はただ１つ存在する．
+\end{theorem}
+
+この定理によって，１つ解を見つければそれがただ１つの解であること，すなわち適切な初期条件の下では運動は１つに定まることが保証される．
+
+\section{微分方程式の諸解法}
+
+\subsection{変数分離形}
+
+\subsubsection{変数分離形の基本}
+
+\begin{equation}
+    \frac{dx}{dt}=f(x)g(t)
+\end{equation}
+の形をしているものを一般に変数分離形の微分方程式と呼ぶ．これは
+
+\begin{equation}
+    \frac{1}{f(x)}dx=g(t)dt
+\end{equation}
+と変形できるので，両辺を積分すると，微分演算子を含まない $x, t$ の満たすべき式が得られる．
+
+　
+
+\noindent
+\textbf{変数分離形のなかま：同次形}
+
+\begin{equation}
+    \label{e3}
+    \frac{dx}{dt}=f\left(\frac{x}{t}\right)
+\end{equation}
+の形を満たすようなものを同次形という．これは $u=\frac{x}{t}$ 即ち $x=ut$ とすれば $\frac{dx}{dt}(=f(u))=u+t\frac{du}{dt}$ である．これを再び式 (\ref{e3}) に適用すれば
+
+\begin{equation}
+    \frac{du}{dt}=\frac{1}{t}\left(f(u)-u\right)
+\end{equation}
+という変数分離形の微分方程式が得られる．
+
+\subsubsection{定数変化法}
+
+線形微分方程式
+\begin{equation}
+    \label{e4}
+    \frac{dx}{dt}+p(t)x=q(t)
+\end{equation}
+を考える．これを解くために補助方程式
+\begin{equation}
+    \frac{dx}{dt}+p(t)x=0
+\end{equation}
+を用意する．これは変数分離形なのですぐに解けて
+\begin{equation}
+    x=c_0e^{-\int p(t)dt}
+\end{equation}
+を得る．ここで上の解の定数 $c_0$ を変数 $z(t)$ におきかえてみる．$x=ze^{-\int p(t)dt}$ を (\ref{e4}) に代入すると
+\begin{equation}
+    \frac{dx}{dt}+p(t)x=\frac{dz}{dt}e^{-\int p(t)dt}=q(t)
+\end{equation}
+よって
+\begin{equation}
+    z=\int q(t)e^{\int p(t)dt}+c
+\end{equation}
+更に
+\begin{equation}
+    x=e^{-\int p(t)dt}\left(\int q(t)e^{\int p(t)dt}dt+c\right)
+\end{equation}
+を得る．
+
+\subsection{高階線形微分方程式 -  2 階を例に}
+
+2 階同次微分方程式
+\begin{equation}
+    \frac{d^2 x}{dt^2}+p(t)\frac{dx}{dt}+q(t)x=0
+\end{equation}
+の１次独立な解を $x_1(t), x_2(t)$ とすると，一般解は
+\begin{equation}
+    x=c_1x_1(t)+c_2x_2(t)
+\end{equation}
+のように，解どうしの線形結合で表される．
+
+\subsubsection{定数係数線形同次微分方程式，特性方程式の正当性}
+
+同次方程式
+\begin{equation}
+    \frac{d^2x}{dt^2}-(\omega_1+\omega_2)\frac{dx}{dt}+\omega_1\omega_2 x=0
+\end{equation}
+を考えると
+\begin{equation}
+    \left(\frac{d}{dt}-\omega_1\right)\left(\frac{d}{dt}-\omega_2\right)x=0
+\end{equation}
+と変形することができ，これは「$\frac{d}{dt}$ に関する２次方程式」と解釈することも可能である．そう見たとき，微分作用素 $\frac{d}{dt}$ は定数 $\omega_1, \omega_2$ に等しい．このような条件を満たす関数 $x$ は指数関数である．
+
+　
+
+\noindent
+\textbf{[1] $\omega_1, \omega_2\in\R,\ \omega_1,\neq\omega_2$}
+
+解 $x$ は異なる指数関数どうしの線形結合
+\begin{equation}
+    x=c_1e^{\omega_1 t}+c_2e^{\omega_2t}
+\end{equation}
+で表される．
+
+\noindent
+\textbf{[2] $\omega_1=\omega_2=\omega\in\R$}
+
+解 $x$ は
+\begin{equation}
+    x=(c_1+c_2t)e^{\omega t}
+\end{equation}
+と表される．これは $(t+\alpha)e^t$ に対して $\frac{d}{dt}$ を作用させたときに () 内の定数のみが変化する様子からわかる．
+
+　
+
+\noindent
+\textbf{[3] $\omega_1, \omega_2\in\C\backslash\R$}
+
+$\omega_1, \omega_2=\alpha\pm i\beta$ とおくと
+\begin{equation}
+    x=c_1e^{\omega_1t}+c_2e^{\omega_2t}=e^{\alpha t}((c_1+c_2)\cos\beta t+i(c_1-c_2)\sin\beta t)
+\end{equation}
+のように表される．
+
+\subsubsection{定数変化法}
+
+方程式
+\begin{equation}
+    \frac{d^2x}{dt^2}+p\frac{dx}{dt}+qx=r(t)\ \ \ (p, q=const.)
+\end{equation}
+の特殊解を求める．補助方程式
+\begin{equation}
+    \frac{d^2x}{dt^2}+p\frac{dx}{dt}+qx=0
+\end{equation}
+の一般解を $x_1, x_2$ とし，
+\begin{equation}
+    W[x_1, x_2]=
+    \left|\begin{matrix}
+        x_1&x_2\\
+        x_1'&x_2'
+    \end{matrix}\right|
+\end{equation}
+でロンスキ行列式を定める．特殊解を $x_0=c_1(t)x_1+c_2(t)x_2,\ \ \ c_1'(t)x_1+c_2'(t)x_2=0$ として微分方程式に代入すると $c_1'x_1'+c_2'x_2'=r$ が得られるので，ロンスキ行列式 $W(t)$ を用いると
+\begin{equation}
+    \left(\begin{matrix}
+        x_1&x_2\\
+        x_1'&x_2'
+    \end{matrix}\right)\left(
+        \begin{matrix}
+            c_1'\\
+            c_2'
+        \end{matrix}
+    \right)
+    =\left(\begin{matrix}
+        0\\
+        r(t)
+    \end{matrix}\right)
+\end{equation}
+従って
+\begin{equation}
+    \left(
+        \begin{matrix}
+            c_1'\\
+            c_2'
+        \end{matrix}
+    \right)
+    =\frac{1}{W(t)}\left(\begin{matrix}
+        x_2'&-x_2\\
+        -x_1'&x_1
+    \end{matrix}\right)\left(\begin{matrix}
+        0\\
+        r(t)
+    \end{matrix}\right)
+\end{equation}
+より得られる関係式の両辺を積分して，$c_1(t), c_2(t)$ ひいては特殊解 $x_0$ が求められる．
+
+\subsubsection{未定係数法}
+
+方程式
+\begin{equation}
+    \frac{d^2x}{dt^2}+p\frac{dx}{dt}+qx=r(t)\ \ \ (p, q=const.)
+\end{equation}
+における $r(t)$ が以下の場合は，係数を未知とおいて微分方程式に代入することで特殊解 $x_0$ が得られる．
+\begin{enumerate}
+    \item $r(t)=Ae^{pt}$ のとき，$x_0=ke^{pt}$
+    \item $r(t)$ が多項式のとき，$x_0$ も多項式
+    \item $r(t)=e^{pt}(A\cos qt+B\sin qt)$ のとき，$x_0=e^{pt}(k\cos qt+l\sin qt)$
+\end{enumerate}
+
+\subsection{演算子法}
+
+\begin{definition}
+    \begin{equation}
+        D=\frac{d}{dt}
+    \end{equation}
+    とおき，これを微分演算子と呼ぶこととする．微分演算子は以下の性質を持つ．
+    \begin{enumerate}
+        \item 交換法則： $f(D)g(D)=g(D)f(D)$
+        \item 線形性： $f(D)(au+bv)=af(D)u+bf(D)v$
+    \end{enumerate}
+\end{definition}
+
+\begin{definition}
+    $\frac{1}{D}$ を逆演算子と呼ぶこととする．
+    \begin{equation}
+        f(D)x=F(t)\Leftrightarrow x=\frac{1}{f(D)}F(t)
+    \end{equation}
+    であり，以下の性質が成り立つ．
+    \begin{enumerate}
+        \item $Dx=F(t)\Leftrightarrow x=\frac{1}{D}F(t)=\int F(t)dt$
+        \item $f(D)e^{\alpha t}=f(\alpha)e^{\alpha t}\ \ \therefore \frac{1}{f(D)}e^{\alpha t}=\frac{1}{f(\alpha)}e^{\alpha t}$
+        \item $f(D)(e^{\alpha t}x)=e^{\alpha t}f(D+\alpha)x=F(t)\ \ \therefore \frac{1}{f(D)}F(t)=e^{\alpha t}\frac{1}{f(D+\alpha)}(e^{-\alpha t}F(t))$
+    \end{enumerate}
+\end{definition}
+
+\subsection{級数解法}
+
+解を初等関数で表現できない場合，または解の形がわかりにくい場合，解を整級数
+\begin{equation}
+    x=\sum_{k=0}^\infty c_kt^k
+\end{equation}
+でおいて微分方程式に代入すると解ける場合がある．係数比較などにより $\{c_k\}$ の漸化式を立てることができる．
+
+\section{特殊関数論へ - 極座標によるシュレディンガー方程式を解く}
+
+ラプラシアン $\nabla^2$ を
+\begin{equation}
+    \nabla^2=\left(\frac{\partial^2}{\partial r^2}+\frac{2}{r}\frac{\partial}{\partial r}\right)+\frac{1}{r^2}\left(\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\left(\sin\theta\frac{\partial}{\partial\theta}\right)+\frac{1}{\sin^2\theta}\frac{\partial^2}{\partial\phi^2}\right)
+\end{equation}
+とおくと，３次元のシュレディンガー方程式は
+\begin{equation}
+    \label{e5}
+    \left(-\frac{\hbar^2}{2\mu}\nabla^2+V(r)\right)\psi=E\psi
+\end{equation}
+と書ける．ポテンシャルが角度によらない，即ち $\psi$ が動径方向と角度方向に変数分離できるとすると
+\begin{equation}
+    \psi(\bm r)=R(r)Y(\theta, \phi)
+\end{equation}
+と書ける．これを (\ref{e5}) に代入して整理すると，$\lambda$ を定数として
+\begin{eqnarray}
+    \label{e6}
+    \frac{1}{r}\frac{d^2}{dr^2}(rR(r))+\left(\frac{2\mu}{\hbar^2}(E-V(r))-\frac{\lambda}{r^2}\right)R(r)=0\\
+    \label{e7}
+    \frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\left(\sin\theta\frac{\partial Y}{\partial\theta}\right)+\frac{1}{\sin^2\theta}\frac{\partial^2Y}{\partial\phi^2}+\lambda Y=0
+\end{eqnarray}
+の２つの微分方程式が得られる．(\ref{e6}) はポテンシャル $V(r)$ の具体的な形が与えられないとこれ以上の議論はできないが，(\ref{e7}) はポテンシャル $V(r)$ もエネルギー $E$ も含まないから，$Y$ が更に変数分離できると仮定して更に変形を進める．
+\begin{equation}
+    Y(\theta, \phi)=\Theta(\theta)\Phi(\phi)
+\end{equation}
+のように変数分離して (\ref{e7}) に代入して整理すると，$m^2$ を定数として
+\begin{eqnarray}
+    \label{e8}
+    \frac{d^2\Phi}{d\phi^2}+m^2\Phi(\phi)=0\\
+    \label{e9}
+    \frac{1}{\sin\theta}\frac{d}{d\theta}\left(\sin\theta\frac{d\Theta}{d\theta}\right)+\left(\lambda-\frac{m^2}{\sin^2\theta}\right)\Phi=0
+\end{eqnarray}
+という２つの方程式が得られる．(\ref{e8}) は簡単に解けるが (\ref{e9}) は初等関数の範囲内では解くことができず，$l\in\N$ として
+\begin{equation}
+    P_l^m(\cos\theta)=(1-\cos^2\theta)^{\frac{m}{2}}\frac{d^mP_l(\cos\theta)}{d(\cos\theta)^m}，ただし　P_l(z)=\frac{1}{2^l l!}\frac{d^l}{dz^l}(z^2-1)^l
+\end{equation}
+を解にもつことがわかっている．
+
+\section*{参考文献}
+
+[1] 井田大輔, 現代解析力学入門, 朝倉書店, 2020, pp. 10-21
+
+[2] 高橋陽一郎, 微分方程式入門, 基礎数学６, 東京大学出版会, 1988, pp. 1-14
+
+[3] 東京工業大学工学院機械系開講科目「常微分方程式」講義資料, 2021
+
+[4] 東京工業大学理学院物理学系開講科目「量子力学 II」講義資料, 2021
+
+\end{document}
+
